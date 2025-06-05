@@ -1,1 +1,6 @@
 
+
+# Frontend specific
+Frontend/estacionamiento-front/node_modules/
+Frontend/estacionamiento-front/.env
+Frontend/estacionamiento-front/build/
