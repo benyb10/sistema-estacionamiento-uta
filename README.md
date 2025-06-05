@@ -30,8 +30,10 @@ Sistema de gestión de estacionamiento para la Universidad Técnica de Ambato de
 cd Frontend/estacionamiento-front
 npm install
 npm start
-Backend
-bashcd Backend
+
+### Backend
+```bash
+cd Backend
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
