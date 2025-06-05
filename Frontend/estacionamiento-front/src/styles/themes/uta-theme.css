@@ -1,0 +1,440 @@
+/* Tema Principal UTA - Universidad Técnica de Ambato */
+
+/* === APLICACIÓN DEL TEMA === */
+.theme-uta {
+  /* Aplicar variables del tema UTA */
+  color-scheme: light;
+}
+
+/* === ELEMENTOS GLOBALES DEL TEMA === */
+body.theme-uta {
+  background: var(--uta-gray-light);
+  color: var(--uta-gray-dark);
+}
+
+/* === COMPONENTES TEMÁTICOS === */
+
+/* Contenedores principales */
+.container-uta {
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+  padding: 0 var(--container-padding);
+}
+
+/* Cards estilo UTA */
+.card-uta {
+  background: var(--uta-white);
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 4px 15px var(--uta-shadow-light);
+  border: 1px solid rgba(139, 0, 0, 0.1);
+  overflow: hidden;
+  transition: var(--transition-normal);
+}
+
+.card-uta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px var(--uta-shadow);
+}
+
+.card-uta-header {
+  background: var(--gradient-primary);
+  color: var(--uta-white);
+  padding: var(--spacing-lg);
+  position: relative;
+}
+
+.card-uta-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--uta-gold), transparent, var(--uta-gold));
+}
+
+.card-uta-body {
+  padding: var(--spacing-lg);
+}
+
+.card-uta-footer {
+  background: var(--uta-gray-lighter);
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-top: 1px solid rgba(139, 0, 0, 0.1);
+}
+
+/* Botones estilo UTA */
+.btn-uta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md) var(--spacing-lg);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1;
+  text-align: center;
+  text-decoration: none;
+  border: none;
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-uta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-uta:hover::before {
+  left: 100%;
+}
+
+.btn-uta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Variantes de botones */
+.btn-uta-primary {
+  background: var(--gradient-primary);
+  color: var(--uta-white);
+  box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+}
+
+.btn-uta-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(139, 0, 0, 0.4);
+}
+
+.btn-uta-secondary {
+  background: transparent;
+  color: var(--uta-red-primary);
+  border: 2px solid var(--uta-red-primary);
+}
+
+.btn-uta-secondary:hover {
+  background: var(--uta-red-primary);
+  color: var(--uta-white);
+}
+
+.btn-uta-success {
+  background: var(--gradient-success);
+  color: var(--uta-white);
+}
+
+.btn-uta-warning {
+  background: var(--gradient-warning);
+  color: var(--uta-white);
+}
+
+.btn-uta-error {
+  background: var(--gradient-error);
+  color: var(--uta-white);
+}
+
+.btn-uta-info {
+  background: var(--gradient-info);
+  color: var(--uta-white);
+}
+
+/* Tamaños de botones */
+.btn-uta-sm {
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-sm);
+}
+
+.btn-uta-lg {
+  padding: var(--spacing-lg) var(--spacing-xl);
+  font-size: var(--font-size-lg);
+}
+
+/* Inputs estilo UTA */
+.input-uta {
+  width: 100%;
+  padding: var(--spacing-md);
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  color: var(--uta-gray-dark);
+  background: var(--uta-white);
+  border: 2px solid #E0E0E0;
+  border-radius: var(--border-radius-md);
+  transition: var(--transition-normal);
+  outline: none;
+}
+
+.input-uta:focus {
+  border-color: var(--uta-red-primary);
+  box-shadow: 0 0 0 3px rgba(139, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+.input-uta:invalid {
+  border-color: var(--uta-error);
+}
+
+.input-uta:valid {
+  border-color: var(--uta-success);
+}
+
+/* Labels estilo UTA */
+.label-uta {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--uta-red-primary);
+}
+
+/* Alerts estilo UTA */
+.alert-uta {
+  padding: var(--spacing-md) var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  border-left: 4px solid;
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-relaxed);
+}
+
+.alert-uta-success {
+  background: linear-gradient(145deg, #E8F5E8, #C8E6C9);
+  color: var(--uta-success);
+  border-left-color: var(--uta-success);
+}
+
+.alert-uta-warning {
+  background: linear-gradient(145deg, #FFF8E1, #FFECB3);
+  color: var(--uta-warning);
+  border-left-color: var(--uta-warning);
+}
+
+.alert-uta-error {
+  background: linear-gradient(145deg, #FFEBEE, #FFCDD2);
+  color: var(--uta-error);
+  border-left-color: var(--uta-error);
+}
+
+.alert-uta-info {
+  background: linear-gradient(145deg, #E3F2FD, #BBDEFB);
+  color: var(--uta-info);
+  border-left-color: var(--uta-info);
+}
+
+/* Badges estilo UTA */
+.badge-uta {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-radius: var(--border-radius-full);
+  line-height: 1;
+}
+
+.badge-uta-primary {
+  background: var(--uta-red-primary);
+  color: var(--uta-white);
+}
+
+.badge-uta-secondary {
+  background: var(--uta-gray-medium);
+  color: var(--uta-white);
+}
+
+.badge-uta-success {
+  background: var(--uta-success);
+  color: var(--uta-white);
+}
+
+.badge-uta-warning {
+  background: var(--uta-warning);
+  color: var(--uta-white);
+}
+
+.badge-uta-error {
+  background: var(--uta-error);
+  color: var(--uta-white);
+}
+
+/* Tablas estilo UTA */
+.table-uta {
+  width: 100%;
+  border-collapse: collapse;
+  background: var(--uta-white);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 15px var(--uta-shadow-light);
+}
+
+.table-uta th {
+  background: var(--gradient-primary);
+  color: var(--uta-white);
+  padding: var(--spacing-md) var(--spacing-lg);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.table-uta td {
+  padding: var(--spacing-md) var(--spacing-lg);
+  border-bottom: 1px solid rgba(139, 0, 0, 0.1);
+  font-size: var(--font-size-sm);
+}
+
+.table-uta tr:hover {
+  background: rgba(139, 0, 0, 0.05);
+}
+
+.table-uta tr:last-child td {
+  border-bottom: none;
+}
+
+/* Loaders estilo UTA */
+.loader-uta {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(139, 0, 0, 0.1);
+  border-top: 4px solid var(--uta-red-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Tooltips estilo UTA */
+.tooltip-uta {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-uta::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--uta-gray-dark);
+  color: var(--uta-white);
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: var(--transition-fast);
+  z-index: var(--z-index-tooltip);
+}
+
+.tooltip-uta:hover::after {
+  opacity: 1;
+}
+
+/* Gradientes de fondo */
+.bg-gradient-primary {
+  background: var(--gradient-primary);
+}
+
+.bg-gradient-secondary {
+  background: var(--gradient-secondary);
+}
+
+.bg-gradient-gold {
+  background: var(--gradient-gold);
+}
+
+/* Efectos especiales UTA */
+.glass-effect {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: var(--backdrop-blur);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.shadow-uta {
+  box-shadow: 0 4px 15px var(--uta-shadow);
+}
+
+.shadow-uta-lg {
+  box-shadow: 0 8px 30px var(--uta-shadow);
+}
+
+/* Animaciones del tema */
+.fade-in-uta {
+  animation: fadeInUta 0.6s ease-out;
+}
+
+.slide-up-uta {
+  animation: slideUpUta 0.6s ease-out;
+}
+
+@keyframes fadeInUta {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUpUta {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .btn-uta {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-size: var(--font-size-sm);
+  }
+  
+  .card-uta-header,
+  .card-uta-body {
+    padding: var(--spacing-md);
+  }
+  
+  .table-uta th,
+  .table-uta td {
+    padding: var(--spacing-sm) var(--spacing-md);
+  }
+}
+
+/* === MODO OSCURO (futuro) === */
+@media (prefers-color-scheme: dark) {
+  .theme-uta {
+    color-scheme: dark;
+  }
+  
+  .card-uta {
+    background: var(--dark-bg-secondary);
+    color: var(--dark-text-primary);
+  }
+  
+  .input-uta {
+    background: var(--dark-bg-secondary);
+    color: var(--dark-text-primary);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}

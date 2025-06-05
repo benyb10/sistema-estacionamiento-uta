@@ -1,0 +1,22 @@
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-table th,
+.admin-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #E0E0E0;
+}
+
+.admin-table th {
+  background: var(--uta-red-primary);
+  color: var(--uta-white);
+  font-weight: 600;
+}
+
+.admin-table tr:hover {
+  background: rgba(139, 0, 0, 0.05);
+}

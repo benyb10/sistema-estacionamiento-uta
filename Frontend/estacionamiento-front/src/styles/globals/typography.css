@@ -1,0 +1,324 @@
+/* Tipografía Global - Universidad Técnica de Ambato */
+
+/* === CONFIGURACIÓN BASE === */
+html {
+  font-size: 16px; /* Base para rem */
+  line-height: 1.5;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  color: var(--uta-gray-dark);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* === HEADINGS === */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-family-primary);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--uta-red-primary);
+  margin-bottom: 0.5em;
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  letter-spacing: -0.025em;
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.025em;
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-bold);
+}
+
+h4 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+}
+
+h5 {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+}
+
+h6 {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* === PÁRRAFOS === */
+p {
+  margin-bottom: 1em;
+  line-height: var(--line-height-relaxed);
+}
+
+p:last-child {
+  margin-bottom: 0;
+}
+
+.lead {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-light);
+  line-height: var(--line-height-relaxed);
+  color: var(--uta-gray-medium);
+}
+
+/* === ENLACES === */
+a {
+  color: var(--uta-red-primary);
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+
+a:hover {
+  color: var(--uta-red-secondary);
+  text-decoration: underline;
+}
+
+a:focus {
+  outline: 2px solid var(--uta-red-primary);
+  outline-offset: 2px;
+}
+
+/* === LISTAS === */
+ul, ol {
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+ul {
+  list-style-type: disc;
+}
+
+ol {
+  list-style-type: decimal;
+}
+
+li {
+  margin-bottom: 0.25em;
+  line-height: var(--line-height-relaxed);
+}
+
+li:last-child {
+  margin-bottom: 0;
+}
+
+/* Listas sin estilo */
+.list-none {
+  list-style: none;
+  padding-left: 0;
+}
+
+/* === ELEMENTOS INLINE === */
+strong, b {
+  font-weight: var(--font-weight-bold);
+  color: var(--uta-red-primary);
+}
+
+em, i {
+  font-style: italic;
+}
+
+small {
+  font-size: var(--font-size-sm);
+  color: var(--uta-gray-medium);
+}
+
+mark {
+  background-color: var(--uta-gold);
+  color: var(--uta-gray-dark);
+  padding: 0.1em 0.2em;
+  border-radius: 2px;
+}
+
+/* === CÓDIGO === */
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--font-family-mono);
+  font-size: 0.9em;
+}
+
+code {
+  background-color: var(--uta-gray-light);
+  color: var(--uta-red-primary);
+  padding: 0.2em 0.4em;
+  border-radius: var(--border-radius-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+pre {
+  background-color: var(--uta-gray-light);
+  color: var(--uta-gray-dark);
+  padding: 1em;
+  border-radius: var(--border-radius-md);
+  overflow-x: auto;
+  line-height: var(--line-height-normal);
+  border-left: 4px solid var(--uta-red-primary);
+}
+
+pre code {
+  background: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* === CITAS === */
+blockquote {
+  margin: 1.5em 0;
+  padding: 1em 1.5em;
+  border-left: 4px solid var(--uta-red-primary);
+  background-color: var(--uta-gray-light);
+  font-style: italic;
+  color: var(--uta-gray-medium);
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+blockquote cite {
+  display: block;
+  margin-top: 0.5em;
+  font-size: var(--font-size-sm);
+  color: var(--uta-gray-medium);
+  font-style: normal;
+}
+
+blockquote cite::before {
+  content: "— ";
+}
+
+/* === CLASES UTILITARIAS DE TIPOGRAFÍA === */
+
+/* Tamaños de texto */
+.text-xs { font-size: var(--font-size-xs); }
+.text-sm { font-size: var(--font-size-sm); }
+.text-base { font-size: var(--font-size-base); }
+.text-lg { font-size: var(--font-size-lg); }
+.text-xl { font-size: var(--font-size-xl); }
+.text-2xl { font-size: var(--font-size-2xl); }
+.text-3xl { font-size: var(--font-size-3xl); }
+.text-4xl { font-size: var(--font-size-4xl); }
+
+/* Pesos de fuente */
+.font-light { font-weight: var(--font-weight-light); }
+.font-normal { font-weight: var(--font-weight-normal); }
+.font-medium { font-weight: var(--font-weight-medium); }
+.font-semibold { font-weight: var(--font-weight-semibold); }
+.font-bold { font-weight: var(--font-weight-bold); }
+.font-extrabold { font-weight: var(--font-weight-extrabold); }
+
+/* Alineación de texto */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+.text-justify { text-align: justify; }
+
+/* Transformación de texto */
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+.normal-case { text-transform: none; }
+
+/* Decoración de texto */
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+.no-underline { text-decoration: none; }
+
+/* Espaciado entre letras */
+.tracking-tight { letter-spacing: -0.025em; }
+.tracking-normal { letter-spacing: 0; }
+.tracking-wide { letter-spacing: 0.025em; }
+.tracking-wider { letter-spacing: 0.05em; }
+.tracking-widest { letter-spacing: 0.1em; }
+
+/* Altura de línea */
+.leading-tight { line-height: var(--line-height-tight); }
+.leading-normal { line-height: var(--line-height-normal); }
+.leading-relaxed { line-height: var(--line-height-relaxed); }
+.leading-loose { line-height: var(--line-height-loose); }
+
+/* === ESTILOS ESPECIALES UTA === */
+
+/* Título principal UTA */
+.title-uta {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--uta-red-primary);
+  text-shadow: 0 2px 4px rgba(139, 0, 0, 0.1);
+  letter-spacing: -0.025em;
+}
+
+/* Subtítulo UTA */
+.subtitle-uta {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-medium);
+  color: var(--uta-gray-medium);
+  margin-bottom: 1.5em;
+}
+
+/* Texto destacado */
+.text-highlight {
+  background: linear-gradient(120deg, var(--uta-gold) 0%, var(--uta-gold) 100%);
+  background-repeat: no-repeat;
+  background-size: 100% 0.2em;
+  background-position: 0 88%;
+  padding: 0 0.1em;
+}
+
+/* Texto con gradiente */
+.text-gradient {
+  background: var(--gradient-primary);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  font-weight: var(--font-weight-bold);
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  h1 { font-size: var(--font-size-3xl); }
+  h2 { font-size: var(--font-size-2xl); }
+  h3 { font-size: var(--font-size-xl); }
+  h4 { font-size: var(--font-size-lg); }
+  
+  .title-uta {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .subtitle-uta {
+    font-size: var(--font-size-lg);
+  }
+}
+
+@media (max-width: 480px) {
+  html { font-size: 14px; }
+  
+  h1 { font-size: var(--font-size-2xl); }
+  h2 { font-size: var(--font-size-xl); }
+  h3 { font-size: var(--font-size-lg); }
+  
+  .title-uta {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .subtitle-uta {
+    font-size: var(--font-size-base);
+  }
+}

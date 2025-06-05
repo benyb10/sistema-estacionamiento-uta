@@ -1,0 +1,28 @@
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.info-item {
+  padding: 15px;
+  background: rgba(139, 0, 0, 0.05);
+  border-radius: 8px;
+  border-left: 4px solid var(--uta-red-primary);
+}
+
+.setting-item {
+  padding: 20px;
+  background: var(--uta-white);
+  border-radius: 8px;
+  border: 1px solid #E0E0E0;
+  margin-bottom: 15px;
+}
+
+.setting-item label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--uta-red-primary);
+  font-weight: 600;
+}

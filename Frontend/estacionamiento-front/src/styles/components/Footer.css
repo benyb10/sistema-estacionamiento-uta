@@ -1,0 +1,249 @@
+/* Footer principal estilo UTA */
+.footer-uta {
+  background: linear-gradient(135deg, var(--uta-gray-dark) 0%, #1A1A1A 100%);
+  color: var(--uta-white);
+  margin-top: auto;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Línea decorativa superior */
+.footer-decorative-line {
+  height: 4px;
+  background: linear-gradient(90deg, var(--uta-red-primary), var(--uta-gold), var(--uta-red-secondary), var(--uta-gold), var(--uta-red-primary));
+  background-size: 200% 100%;
+  animation: shimmer 3s ease-in-out infinite;
+}
+
+/* Contenido principal del footer */
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 20px;
+  position: relative;
+  z-index: 2;
+}
+
+/* Sección principal del footer */
+.footer-main {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 30px;
+  margin-bottom: 30px;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.footer-section h4 {
+  color: var(--uta-red-light);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  position: relative;
+}
+
+.footer-section h4::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 40px;
+  height: 2px;
+  background: var(--uta-gold);
+  border-radius: 1px;
+}
+
+.footer-section p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #CCCCCC;
+  margin: 0;
+}
+
+/* Items de contacto */
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+  color: #CCCCCC;
+  transition: color 0.3s ease;
+}
+
+.contact-item:hover {
+  color: var(--uta-white);
+}
+
+.contact-icon {
+  font-size: 1rem;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Footer inferior */
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.footer-legal {
+  flex: 1;
+}
+
+.footer-legal p {
+  font-size: 0.8rem;
+  color: #AAAAAA;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.footer-legal p:first-child {
+  font-weight: 600;
+  color: #CCCCCC;
+}
+
+/* Enlaces del footer */
+.footer-links {
+  display: flex;
+  gap: 15px;
+}
+
+.footer-link {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #CCCCCC;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+}
+
+.footer-link:hover {
+  background: var(--uta-red-primary);
+  border-color: var(--uta-red-primary);
+  color: var(--uta-white);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(139, 0, 0, 0.3);
+}
+
+/* Efectos de fondo */
+.footer-uta::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(139, 0, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Animaciones */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .footer-content {
+    padding: 30px 15px 15px;
+  }
+
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 25px;
+    text-align: center;
+  }
+
+  .footer-section h4::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    text-align: center;
+    gap: 15px;
+  }
+
+  .footer-links {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .footer-content {
+    padding: 25px 10px 10px;
+  }
+
+  .footer-section {
+    gap: 8px;
+  }
+
+  .footer-section h4 {
+    font-size: 1rem;
+  }
+
+  .contact-item {
+    font-size: 0.85rem;
+    justify-content: center;
+  }
+
+  .footer-legal p {
+    font-size: 0.75rem;
+  }
+
+  .footer-link {
+    padding: 6px 12px;
+    font-size: 0.75rem;
+  }
+}
+
+/* Estados especiales */
+@media (prefers-reduced-motion: reduce) {
+  .footer-decorative-line {
+    animation: none;
+  }
+  
+  .footer-link {
+    transition: none;
+  }
+}
+
+/* Mejoras de accesibilidad */
+.footer-link:focus {
+  outline: 2px solid var(--uta-red-light);
+  outline-offset: 2px;
+}
+
+/* Efecto de hover en toda la sección */
+.footer-section:hover h4 {
+  color: var(--uta-white);
+  transition: color 0.3s ease;
+}
+
+/* Micro-animación para los iconos */
+.contact-icon {
+  transition: transform 0.3s ease;
+}
+
+.contact-item:hover .contact-icon {
+  transform: scale(1.1);
+}
