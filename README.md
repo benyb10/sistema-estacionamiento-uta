@@ -11,7 +11,7 @@ Sistema de gestión de estacionamiento para la Universidad Técnica de Ambato de
 - Interfaz responsive
 - Tiempo real con WebSockets
 
-## 🛠Tecnologías
+## Tecnologías
 
 ### Frontend
 - React 18
@@ -37,5 +37,6 @@ cd Backend
 pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
-Autor
+
+### Autor
 Bryan Viteri - @benyb10
