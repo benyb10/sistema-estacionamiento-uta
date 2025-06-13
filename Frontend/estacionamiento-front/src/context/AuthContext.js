@@ -1,49 +1,130 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authService } from '../services/api/authService';
 
-const AuthContext = createContext();
-
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuth debe ser usado dentro de AuthProvider');
-  }
-  return context;
+// Estado inicial
+const initialState = {
+  user: null,
+  loading: true,
+  error: null,
+  isAuthenticated: false
 };
 
-export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// Tipos de acciones
+const AUTH_ACTIONS = {
+  LOGIN_START: 'LOGIN_START',
+  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+  LOGIN_FAILURE: 'LOGIN_FAILURE',
+  LOGOUT: 'LOGOUT',
+  REGISTER_START: 'REGISTER_START',
+  REGISTER_SUCCESS: 'REGISTER_SUCCESS',
+  REGISTER_FAILURE: 'REGISTER_FAILURE',
+  SET_LOADING: 'SET_LOADING',
+  CLEAR_ERROR: 'CLEAR_ERROR',
+  UPDATE_USER: 'UPDATE_USER'
+};
 
-  // Verificar si hay usuario guardado al cargar
+// Reducer para manejar el estado de autenticación
+const authReducer = (state, action) => {
+  switch (action.type) {
+    case AUTH_ACTIONS.LOGIN_START:
+    case AUTH_ACTIONS.REGISTER_START:
+      return {
+        ...state,
+        loading: true,
+        error: null
+      };
+
+    case AUTH_ACTIONS.LOGIN_SUCCESS:
+    case AUTH_ACTIONS.REGISTER_SUCCESS:
+      return {
+        ...state,
+        user: action.payload.user,
+        loading: false,
+        error: null,
+        isAuthenticated: true
+      };
+
+    case AUTH_ACTIONS.LOGIN_FAILURE:
+    case AUTH_ACTIONS.REGISTER_FAILURE:
+      return {
+        ...state,
+        user: null,
+        loading: false,
+        error: action.payload.error,
+        isAuthenticated: false
+      };
+
+    case AUTH_ACTIONS.LOGOUT:
+      return {
+        ...state,
+        user: null,
+        loading: false,
+        error: null,
+        isAuthenticated: false
+      };
+
+    case AUTH_ACTIONS.SET_LOADING:
+      return {
+        ...state,
+        loading: action.payload
+      };
+
+    case AUTH_ACTIONS.CLEAR_ERROR:
+      return {
+        ...state,
+        error: null
+      };
+
+    case AUTH_ACTIONS.UPDATE_USER:
+      return {
+        ...state,
+        user: { ...state.user, ...action.payload }
+      };
+
+    default:
+      return state;
+  }
+};
+
+// Crear el contexto
+const AuthContext = createContext();
+
+// Provider del contexto
+export const AuthProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, initialState);
+
+  // Verificar si hay un token guardado al iniciar la aplicación
   useEffect(() => {
-    const initializeAuth = async () => {
+    const checkAuthStatus = async () => {
       try {
         const savedUser = localStorage.getItem('user');
         const token = localStorage.getItem('authToken');
         
         if (savedUser && token) {
           const userData = JSON.parse(savedUser);
-          setUser(userData);
-          // Opcional: Verificar token válido con el servidor
-          // await authService.verifyToken(token);
+          dispatch({
+            type: AUTH_ACTIONS.LOGIN_SUCCESS,
+            payload: { user: userData }
+          });
+        } else {
+          dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
         }
       } catch (error) {
+        // Token inválido o expirado
         console.error('Error al inicializar autenticación:', error);
-        logout(); // Limpiar datos inválidos
-      } finally {
-        setLoading(false);
+        localStorage.removeItem('user');
+        localStorage.removeItem('authToken');
+        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
       }
     };
 
-    initializeAuth();
+    checkAuthStatus();
   }, []);
 
+  // Función para hacer login
   const login = async (credentials) => {
     try {
-      setLoading(true);
-      setError(null);
+      dispatch({ type: AUTH_ACTIONS.LOGIN_START });
       
       const response = await authService.login(credentials);
       
@@ -56,72 +137,96 @@ export const AuthProvider = ({ children }) => {
           fechaLogin: new Date().toISOString()
         };
         
-        setUser(userData);
+        // Guardar en localStorage
         localStorage.setItem('user', JSON.stringify(userData));
-        
         if (response.token) {
           localStorage.setItem('authToken', response.token);
         }
         
+        dispatch({
+          type: AUTH_ACTIONS.LOGIN_SUCCESS,
+          payload: { user: userData }
+        });
+
         return { success: true, user: userData };
       } else {
         throw new Error(response.message || 'Error de autenticación');
       }
     } catch (error) {
-      setError(error.message);
-      return { success: false, message: error.message };
-    } finally {
-      setLoading(false);
+      const errorMessage = error.message || 'Error al iniciar sesión';
+      dispatch({
+        type: AUTH_ACTIONS.LOGIN_FAILURE,
+        payload: { error: errorMessage }
+      });
+
+      return { success: false, error: errorMessage };
     }
   };
 
+  // Función para hacer registro
   const register = async (userData) => {
     try {
-      setLoading(true);
-      setError(null);
+      dispatch({ type: AUTH_ACTIONS.REGISTER_START });
       
       const response = await authService.register(userData);
       
       if (response.success) {
+        dispatch({
+          type: AUTH_ACTIONS.SET_LOADING,
+          payload: false
+        });
+
         return { success: true, message: 'Usuario registrado exitosamente' };
       } else {
         throw new Error(response.message || 'Error en el registro');
       }
     } catch (error) {
-      setError(error.message);
-      return { success: false, message: error.message };
-    } finally {
-      setLoading(false);
+      const errorMessage = error.message || 'Error al registrarse';
+      dispatch({
+        type: AUTH_ACTIONS.REGISTER_FAILURE,
+        payload: { error: errorMessage }
+      });
+
+      return { success: false, error: errorMessage };
     }
   };
 
+  // Función para hacer logout
   const logout = () => {
-    setUser(null);
-    setError(null);
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
+    dispatch({ type: AUTH_ACTIONS.LOGOUT });
   };
 
-  const updateUser = (updatedData) => {
-    const newUserData = { ...user, ...updatedData };
-    setUser(newUserData);
-    localStorage.setItem('user', JSON.stringify(newUserData));
-  };
-
+  // Función para limpiar errores
   const clearError = () => {
-    setError(null);
+    dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
   };
 
+  // Función para actualizar datos del usuario
+  const updateUser = (userData) => {
+    const newUserData = { ...state.user, ...userData };
+    localStorage.setItem('user', JSON.stringify(newUserData));
+    dispatch({
+      type: AUTH_ACTIONS.UPDATE_USER,
+      payload: userData
+    });
+  };
+
+  // Valor del contexto
   const value = {
-    user,
-    loading,
-    error,
+    // Estado
+    user: state.user,
+    loading: state.loading,
+    error: state.error,
+    isAuthenticated: state.isAuthenticated,
+    
+    // Funciones
     login,
     register,
     logout,
-    updateUser,
     clearError,
-    isAuthenticated: !!user
+    updateUser
   };
 
   return (
@@ -129,4 +234,22 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Hook personalizado para usar el contexto (versión original)
+export const useAuthContext = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuthContext debe ser usado dentro de un AuthProvider');
+  }
+  return context;
+};
+
+// Hook personalizado alternativo (para compatibilidad)
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth debe ser usado dentro de un AuthProvider');
+  }
+  return context;
 };

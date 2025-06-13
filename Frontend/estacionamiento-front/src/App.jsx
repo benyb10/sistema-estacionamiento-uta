@@ -25,6 +25,9 @@ import PlacesPage from './pages/admin/PlacesPage';
 import ProfilePage from './pages/profile/ProfilePage';
 import SettingsPage from './pages/profile/SettingsPage';
 
+// Páginas de vehículos
+import MyVehiclesPage from './pages/vehicles/MyVehiclesPage';
+
 // Layout principal
 import MainLayout from './components/layout/MainLayout';
 
@@ -176,6 +179,15 @@ function App() {
                   <ProtectedRoute>
                     <MainLayout>
                       <SettingsPage />
+                    </MainLayout>
+                  </ProtectedRoute>
+                } />
+
+                {/* Páginas de vehículos */}
+                <Route path="/vehicles/my-vehicles" element={
+                  <ProtectedRoute>
+                    <MainLayout>
+                      <MyVehiclesPage />
                     </MainLayout>
                   </ProtectedRoute>
                 } />

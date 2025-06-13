@@ -4,6 +4,8 @@ import logoUTA from '../assets/images/UTA.png';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import ModalVerificacion from '../components/common/ModalVerificacion';
+// 🚀 Importar la configuración centralizada
+import { API_BASE_URL, API_ENDPOINTS, DEFAULT_HEADERS, logApiCall } from '../config/api';
 
 function Login() {
   const [cedula, setCedula] = useState('');
@@ -109,11 +111,15 @@ function Login() {
     }
 
     try {
-      const host = window.location.hostname;
+      // 🚀 Usar la URL centralizada
+      const url = `${API_BASE_URL}${API_ENDPOINTS.LOGIN}`;
+      
+      // 🚀 Log para desarrollo
+      logApiCall('POST', url, { cedula, correo, contraseña: '***' });
 
-      const response = await fetch(`http://${host}:8000/login/`, {
+      const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: DEFAULT_HEADERS,
         body: JSON.stringify({ cedula, correo, contraseña }),
       });
 
@@ -127,7 +133,7 @@ function Login() {
         setTipoMensaje('error');
       }
     } catch (error) {
-      console.error('Error al conectar con el servidor', error);
+      console.error('❌ Error al conectar con el servidor:', error);
       setMensaje('❌ Error de conexión. Verifique su conexión a internet.');
       setTipoMensaje('error');
     } finally {
@@ -143,11 +149,15 @@ function Login() {
     }
 
     try {
-      const host = window.location.hostname;
+      // 🚀 Usar la URL centralizada
+      const url = `${API_BASE_URL}${API_ENDPOINTS.VERIFY_CODE}`;
+      
+      // 🚀 Log para desarrollo
+      logApiCall('POST', url, { correo, codigo: codigoVerificacion });
 
-      const response = await fetch(`http://${host}:8000/verificar-codigo/`, {
+      const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: DEFAULT_HEADERS,
         body: JSON.stringify({ correo, codigo: codigoVerificacion }),
       });
 
@@ -194,7 +204,7 @@ function Login() {
         setTipoMensaje('error');
       }
     } catch (error) {
-      console.error('Error en verificación de código', error);
+      console.error('❌ Error en verificación de código:', error);
       setMensaje('❌ Error al verificar el código. Intente nuevamente.');
       setTipoMensaje('error');
     }
@@ -239,6 +249,18 @@ function Login() {
               <img src={logoUTA} alt="Universidad Técnica de Ambato" />
               <h2>Sistema de Estacionamiento</h2>
               <p>Universidad Técnica de Ambato<br />Facultad de Ingeniería en Sistemas</p>
+              
+              {/* 🚀 Mostrar URL de conexión en desarrollo */}
+              {process.env.NODE_ENV === 'development' && (
+                <small style={{ 
+                  display: 'block', 
+                  marginTop: '8px', 
+                  color: '#666', 
+                  fontSize: '0.8rem' 
+                }}>
+                  🔗 Conectando a: {API_BASE_URL}
+                </small>
+              )}
             </div>
 
             <form className="login-form" onSubmit={manejarLogin}>

@@ -49,6 +49,17 @@ const Sidebar = ({ isOpen, onClose }) => {
       ]
     },
     {
+      section: 'Mis Vehículos',
+      items: [
+        {
+          path: '/vehicles/my-vehicles',
+          label: 'Gestionar Vehículos',
+          icon: '🚗',
+          description: 'Mis vehículos registrados'
+        }
+      ]
+    },
+    {
       section: 'Administración',
       items: [
         {

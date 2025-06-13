@@ -48,7 +48,7 @@ const ModalVerificacion = ({
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Ingresa el código de 6 dígitos"
+            placeholder="Ingresa el código"
             value={codigoVerificacion}
             onChange={handleInputChange}
             maxLength="6"

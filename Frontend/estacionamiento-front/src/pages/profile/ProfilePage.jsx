@@ -5,6 +5,7 @@ import '../../styles/pages/Profile.css';
 const ProfilePage = () => {
   const { user } = useAuth();
 
+
   return (
     <div className="page-container">
       <div className="page-header">

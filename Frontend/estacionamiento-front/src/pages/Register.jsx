@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import '../styles/pages/Register.css'; 
 import logoUTA from '../assets/images/UTA.png'; 
 import { useNavigate } from 'react-router-dom';
+// 🚀 Importar la configuración centralizada
+import { API_BASE_URL, API_ENDPOINTS, DEFAULT_HEADERS, logApiCall } from '../config/api';
 
 function Registro() {
   const [cedula, setCedula] = useState('');
@@ -248,11 +250,15 @@ function Registro() {
     };
 
     try {
-      const host = window.location.hostname;
+      // 🚀 Usar la URL centralizada
+      const url = `${API_BASE_URL}${API_ENDPOINTS.REGISTER}`;
+      
+      // 🚀 Log para desarrollo
+      logApiCall('POST', url, { ...datosUsuario, contraseña: '***' });
 
-      const response = await fetch(`http://${host}:8000/usuarios/`, {
+      const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: DEFAULT_HEADERS,
         body: JSON.stringify(datosUsuario),
       });
 
@@ -275,7 +281,7 @@ function Registro() {
         setTipoMensaje('error');
       }
     } catch (error) {
-      console.error('Error al conectar con el servidor', error);
+      console.error('❌ Error al conectar con el servidor:', error);
       setMensaje('❌ Error de conexión. Verifique su conexión a internet.');
       setTipoMensaje('error');
     } finally {
@@ -310,6 +316,18 @@ function Registro() {
             <img src={logoUTA} alt="Universidad Técnica de Ambato" />
             <h2>Registro de Usuario</h2>
             <p>Sistema de Estacionamiento - Universidad Técnica de Ambato</p>
+            
+            {/* 🚀 Mostrar URL de conexión en desarrollo */}
+            {process.env.NODE_ENV === 'development' && (
+              <small style={{ 
+                display: 'block', 
+                marginTop: '8px', 
+                color: '#666', 
+                fontSize: '0.8rem' 
+              }}>
+                🔗 Conectando a: {API_BASE_URL}
+              </small>
+            )}
           </div>
 
           <form className="registro-form" onSubmit={manejarRegistro}>

@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+// 🚀 Importar la configuración centralizada
+import { API_BASE_URL, API_ENDPOINTS, logApiCall } from '../../config/api';
 import '../../styles/components/Modal.css';
 
 const WebSocketManager = ({ children }) => {
@@ -43,16 +45,16 @@ const WebSocketManager = ({ children }) => {
 
   const checkServerAndConnect = async () => {
     try {
-      const protocoloHttp = window.location.protocol === 'https:' ? 'https' : 'http';
-      const host = window.location.hostname;
-      const port = '8000';
+      // 🚀 Usar la URL centralizada para el ping
+      const pingUrl = `${API_BASE_URL}${API_ENDPOINTS.PING}`;
       
-      console.log(`🔍 Verificando servidor en: ${protocoloHttp}://${host}:${port}/ping/`);
+      console.log(`🔍 Verificando servidor en: ${pingUrl}`);
+      logApiCall('GET', pingUrl);
       
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 8000); // Más tiempo para conexiones lentas
       
-      const response = await fetch(`${protocoloHttp}://${host}:${port}/ping/`, {
+      const response = await fetch(pingUrl, {
         method: 'GET',
         signal: controller.signal,
         headers: {
@@ -107,10 +109,11 @@ const WebSocketManager = ({ children }) => {
         return;
       }
 
-      const protocolo = window.location.protocol === 'https:' ? 'wss' : 'ws';
-      const host = window.location.hostname;
-      const port = '8000';
-      const wsUrl = `${protocolo}://${host}:${port}/ws/estado/`;
+      // 🚀 Construir URL de WebSocket usando la configuración centralizada
+      // Extraer host y puerto de API_BASE_URL y convertir a WS
+      const apiUrl = new URL(API_BASE_URL);
+      const protocolo = apiUrl.protocol === 'https:' ? 'wss' : 'ws';
+      const wsUrl = `${protocolo}://${apiUrl.host}/ws/estado/`;
       
       console.log(`🔌 Conectando WebSocket a: ${wsUrl}`);
       
@@ -214,6 +217,19 @@ const WebSocketManager = ({ children }) => {
                 Error: {lastError}
               </p>
             )}
+            
+            {/* 🚀 Mostrar URL de conexión en desarrollo */}
+            {process.env.NODE_ENV === 'development' && (
+              <small style={{ 
+                display: 'block', 
+                marginTop: '8px', 
+                color: '#666', 
+                fontSize: '0.8rem' 
+              }}>
+                🔗 Intentando conectar a: {API_BASE_URL}
+              </small>
+            )}
+            
             <div className="loading-spinner"></div>
           </div>
         </div>

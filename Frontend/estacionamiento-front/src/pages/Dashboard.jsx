@@ -63,11 +63,18 @@ const Dashboard = () => {
       color: 'info'
     },
     {
+      path: '/vehicles/my-vehicles',
+      title: 'Mis Vehículos',
+      icon: '🚗',
+      description: 'Gestionar mis vehículos registrados',
+      color: 'primary'
+    },
+    {
       path: '/parking/reports',
       title: 'Reportes',
       icon: '📈',
       description: 'Informes y estadísticas',
-      color: 'primary'
+      color: 'info'
     }
   ];
 
