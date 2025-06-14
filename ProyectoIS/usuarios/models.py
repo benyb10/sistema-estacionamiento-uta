@@ -1,10 +1,51 @@
 from django.db import models
 from django.contrib.auth.hashers import make_password, check_password
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.utils.crypto import get_random_string
 from django.core.validators import RegexValidator
 from django.utils import timezone
 
-class Usuario(models.Model):
+class UsuarioManager(BaseUserManager):
+    """
+    Manager personalizado para el modelo Usuario
+    """
+    def create_user(self, cedula, correo, password=None, **extra_fields):
+        """
+        Crea y guarda un usuario regular
+        """
+        if not cedula:
+            raise ValueError('La cédula es obligatoria')
+        if not correo:
+            raise ValueError('El correo es obligatorio')
+        
+        correo = self.normalize_email(correo)
+        user = self.model(cedula=cedula, correo=correo, **extra_fields)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+    
+    def create_superuser(self, cedula, correo, password=None, **extra_fields):
+        """
+        Crea y guarda un superusuario
+        """
+        extra_fields.setdefault('is_staff', True)
+        extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('estado', 'ACTIVO')
+        extra_fields.setdefault('categoria', 'PERSONAL')  # Superusuarios como personal
+        
+        # Si no se proporciona fecha_nacimiento, usar una por defecto
+        if 'fecha_nacimiento' not in extra_fields:
+            from datetime import date
+            extra_fields['fecha_nacimiento'] = date(1990, 1, 1)
+        
+        if extra_fields.get('is_staff') is not True:
+            raise ValueError('Superuser debe tener is_staff=True.')
+        if extra_fields.get('is_superuser') is not True:
+            raise ValueError('Superuser debe tener is_superuser=True.')
+        
+        return self.create_user(cedula, correo, password, **extra_fields)
+
+class Usuario(AbstractBaseUser):
     CATEGORIAS = [
         ('ESTUDIANTE', 'Estudiante'),
         ('PROFESOR', 'Profesor'),
@@ -31,7 +72,7 @@ class Usuario(models.Model):
     )
     nombre = models.CharField(max_length=100)
     apellido = models.CharField(max_length=100)
-    fecha_nacimiento = models.DateField()
+    fecha_nacimiento = models.DateField(null=True, blank=True)  # ✅ Permitir null para superusuarios
     correo = models.EmailField(unique=True)
     contraseña = models.CharField(max_length=128)
     categoria = models.CharField(max_length=20, choices=CATEGORIAS, default='ESTUDIANTE')
@@ -46,55 +87,90 @@ class Usuario(models.Model):
     fecha_registro = models.DateTimeField(auto_now_add=True)
     fecha_actualizacion = models.DateTimeField(auto_now=True)
     ultimo_acceso = models.DateTimeField(blank=True, null=True)
+    
+    # ✅ CAMPOS REQUERIDOS POR DJANGO AUTH
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+    
+    # ✅ CONFIGURACIÓN REQUERIDA POR DJANGO
+    USERNAME_FIELD = 'cedula'  # Campo que se usa como username
+    EMAIL_FIELD = 'correo'     # Campo que contiene el email
+    REQUIRED_FIELDS = ['correo', 'nombre', 'apellido']  # Campos requeridos además del USERNAME_FIELD
+    
+    objects = UsuarioManager()
 
     def save(self, *args, **kwargs):
         # Solo hashear la contraseña si no está ya hasheada
-        if not self.contraseña.startswith('pbkdf2_'):
+        if self.contraseña and not self.contraseña.startswith('pbkdf2_'):
             self.contraseña = make_password(self.contraseña)
         super().save(*args, **kwargs)
 
-    # ✅ NUEVO: Métodos necesarios para compatibilidad con JWT
+    def set_password(self, raw_password):
+        """
+        Método requerido por Django para establecer contraseña
+        """
+        self.contraseña = make_password(raw_password)
+
     def check_password(self, raw_password):
         """
         Verifica si la contraseña proporcionada coincide con la almacenada
         """
         return check_password(raw_password, self.contraseña)
 
-    @property
-    def is_active(self):
-        """
-        Propiedad necesaria para JWT - verifica si el usuario está activo
-        """
-        return self.estado == 'ACTIVO'
-
+    # ✅ PROPIEDADES REQUERIDAS POR DJANGO AUTH
     @property
     def is_authenticated(self):
         """
-        Propiedad necesaria para JWT - siempre True para usuarios válidos
+        Siempre True para usuarios válidos
         """
         return True
 
     @property
     def is_anonymous(self):
         """
-        Propiedad necesaria para JWT - siempre False para usuarios válidos
+        Siempre False para usuarios válidos
         """
         return False
+
+    def has_perm(self, perm, obj=None):
+        """
+        Retorna True si el usuario tiene el permiso especificado
+        """
+        return self.is_superuser
+
+    def has_module_perms(self, app_label):
+        """
+        Retorna True si el usuario tiene permisos para ver la app
+        """
+        return self.is_superuser
 
     @property
     def username(self):
         """
-        Propiedad necesaria para JWT - usar cédula como username
+        Propiedad para compatibilidad - usar cédula como username
         """
         return self.cedula
 
     def get_username(self):
         """
-        Método necesario para JWT - retorna el username (cédula)
+        Método requerido por Django - retorna el username (cédula)
         """
         return self.cedula
 
-    # ✅ NUEVO: Método necesario para RefreshToken.for_user()
+    def get_full_name(self):
+        """
+        Retorna el nombre completo del usuario
+        """
+        return f"{self.nombre} {self.apellido}"
+
+    def get_short_name(self):
+        """
+        Retorna el nombre corto del usuario
+        """
+        return self.nombre
+
+    # ✅ MÉTODOS ADICIONALES PARA JWT
     @property
     def pk(self):
         """

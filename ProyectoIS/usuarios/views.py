@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Usuario
 from django.contrib.auth.hashers import check_password
+from rest_framework.permissions import AllowAny  # ✅ ESTO FALTABA
 
 import random
 from django.utils import timezone
@@ -39,6 +40,7 @@ class UsuarioViewSet(viewsets.ModelViewSet):
 class RegistroUsuarioView(generics.CreateAPIView):
     queryset = Usuario.objects.all()
     serializer_class = RegistroUsuarioSerializer
+    permission_classes = [AllowAny]  # ✅ ESTO FALTABA
     
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -48,6 +50,8 @@ class RegistroUsuarioView(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class LoginAPIView(APIView):
+    permission_classes = [AllowAny]  # ✅ ESTO FALTABA EN TU CÓDIGO
+    
     def post(self, request):
         cedula = request.data.get('cedula')
         correo = request.data.get('correo')
@@ -100,6 +104,8 @@ def get_tokens_for_user(user):
     }
 
 class VerificarCodigoAPIView(APIView):
+    permission_classes = [AllowAny]  # ✅ ESTO FALTABA EN TU CÓDIGO
+    
     def post(self, request):
         correo = request.data.get('correo')
         codigo = request.data.get('codigo')
@@ -156,7 +162,7 @@ class VerificarCodigoAPIView(APIView):
             # ✅ Respuesta completa con token y datos del usuario
             return Response({
                 'mensaje': 'Inicio de sesión exitoso',
-                'token': tokens['access'],  #  ESTO ES LO QUE FALTABA
+                'token': tokens['access'],  # 🎯 ESTO ES LO QUE FALTABA
                 'refresh_token': tokens['refresh'],
                 'user': user_data,
                 'expires_in': 1800  # 30 minutos en segundos

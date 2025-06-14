@@ -3,6 +3,8 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+AUTH_USER_MODEL = 'usuarios.Usuario'
+
 AUTHENTICATION_BACKENDS = [
     'usuarios.auth_backends.UsuarioAuthBackend',  # Nuestro backend personalizado
     'django.contrib.auth.backends.ModelBackend',  # Backend por defecto
@@ -186,9 +188,6 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
-    'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.IsAuthenticated',
-    ],
 }
 
 from datetime import timedelta

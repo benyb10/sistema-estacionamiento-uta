@@ -94,7 +94,6 @@ class IngresoVehiculo(models.Model):
         ordering = ['-hora_ingreso']
 
 
-# Modelo adicional para reportes y estadísticas
 class ReporteEstacionamiento(models.Model):
     """Modelo para generar reportes consolidados"""
     usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE)
@@ -107,6 +106,10 @@ class ReporteEstacionamiento(models.Model):
     lugares_utilizados = models.JSONField(default=list)  # Lista de números de lugar
     fecha_generacion = models.DateTimeField(auto_now_add=True)
     
+    def __str__(self):
+        return f"Reporte {self.usuario.get_full_name()} ({self.periodo_inicio} - {self.periodo_fin})"
+    
     class Meta:
         verbose_name = "Reporte de Estacionamiento"
         verbose_name_plural = "Reportes de Estacionamiento"
+
