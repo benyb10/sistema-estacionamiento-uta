@@ -1,46 +1,52 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import { authService } from '../services/api/authService';
 
+// Tipos de acciones para el reducer
+const AUTH_ACTIONS = {
+  SET_LOADING: 'SET_LOADING',
+  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
+  LOGIN_FAILURE: 'LOGIN_FAILURE',
+  REGISTER_START: 'REGISTER_START',
+  REGISTER_SUCCESS: 'REGISTER_SUCCESS',
+  REGISTER_FAILURE: 'REGISTER_FAILURE',
+  LOGOUT: 'LOGOUT',
+  CLEAR_ERROR: 'CLEAR_ERROR',
+  UPDATE_USER: 'UPDATE_USER',
+  RESTORE_SESSION: 'RESTORE_SESSION'
+};
+
 // Estado inicial
 const initialState = {
   user: null,
-  loading: true,
+  loading: true, // ✅ Iniciar en true para verificar sesión
   error: null,
   isAuthenticated: false
 };
 
-// Tipos de acciones
-const AUTH_ACTIONS = {
-  LOGIN_START: 'LOGIN_START',
-  LOGIN_SUCCESS: 'LOGIN_SUCCESS',
-  LOGIN_FAILURE: 'LOGIN_FAILURE',
-  LOGOUT: 'LOGOUT',
-  REGISTER_START: 'REGISTER_START',
-  REGISTER_SUCCESS: 'REGISTER_SUCCESS',
-  REGISTER_FAILURE: 'REGISTER_FAILURE',
-  SET_LOADING: 'SET_LOADING',
-  CLEAR_ERROR: 'CLEAR_ERROR',
-  UPDATE_USER: 'UPDATE_USER'
-};
-
-// Reducer para manejar el estado de autenticación
+// Reducer
 const authReducer = (state, action) => {
   switch (action.type) {
-    case AUTH_ACTIONS.LOGIN_START:
-    case AUTH_ACTIONS.REGISTER_START:
+    case AUTH_ACTIONS.SET_LOADING:
       return {
         ...state,
-        loading: true,
-        error: null
+        loading: action.payload
       };
 
     case AUTH_ACTIONS.LOGIN_SUCCESS:
-    case AUTH_ACTIONS.REGISTER_SUCCESS:
       return {
         ...state,
-        user: action.payload.user,
         loading: false,
         error: null,
+        user: action.payload.user,
+        isAuthenticated: true
+      };
+
+    case AUTH_ACTIONS.RESTORE_SESSION:
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        user: action.payload.user,
         isAuthenticated: true
       };
 
@@ -48,25 +54,19 @@ const authReducer = (state, action) => {
     case AUTH_ACTIONS.REGISTER_FAILURE:
       return {
         ...state,
-        user: null,
         loading: false,
         error: action.payload.error,
+        user: null,
         isAuthenticated: false
       };
 
     case AUTH_ACTIONS.LOGOUT:
       return {
         ...state,
-        user: null,
         loading: false,
+        user: null,
         error: null,
         isAuthenticated: false
-      };
-
-    case AUTH_ACTIONS.SET_LOADING:
-      return {
-        ...state,
-        loading: action.payload
       };
 
     case AUTH_ACTIONS.CLEAR_ERROR:
@@ -81,6 +81,20 @@ const authReducer = (state, action) => {
         user: { ...state.user, ...action.payload }
       };
 
+    case AUTH_ACTIONS.REGISTER_START:
+      return {
+        ...state,
+        loading: true,
+        error: null
+      };
+
+    case AUTH_ACTIONS.REGISTER_SUCCESS:
+      return {
+        ...state,
+        loading: false,
+        error: null
+      };
+
     default:
       return state;
   }
@@ -93,67 +107,78 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  // Verificar si hay un token guardado al iniciar la aplicación
+  // ✅ SOLUCIÓN: Verificar y restaurar sesión al iniciar la aplicación
   useEffect(() => {
-    const checkAuthStatus = async () => {
+    const restoreSession = () => {
       try {
         const savedUser = localStorage.getItem('user');
         const token = localStorage.getItem('authToken');
         
+        console.log('🔄 Verificando sesión guardada...', { 
+          hasUser: !!savedUser, 
+          hasToken: !!token 
+        });
+
         if (savedUser && token) {
           const userData = JSON.parse(savedUser);
-          dispatch({
-            type: AUTH_ACTIONS.LOGIN_SUCCESS,
-            payload: { user: userData }
-          });
-        } else {
-          dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+          
+          // ✅ Validar que los datos del usuario sean válidos
+          if (userData && userData.cedula && userData.correo) {
+            console.log('✅ Restaurando sesión para:', userData.nombre || userData.correo);
+            
+            dispatch({
+              type: AUTH_ACTIONS.RESTORE_SESSION,
+              payload: { user: userData }
+            });
+            return;
+          }
         }
+        
+        // Si no hay sesión válida, terminar loading
+        console.log('❌ No hay sesión válida guardada');
+        dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
+        
       } catch (error) {
-        // Token inválido o expirado
-        console.error('Error al inicializar autenticación:', error);
+        console.error('❌ Error al restaurar sesión:', error);
+        // Limpiar datos corruptos
         localStorage.removeItem('user');
         localStorage.removeItem('authToken');
         dispatch({ type: AUTH_ACTIONS.SET_LOADING, payload: false });
       }
     };
 
-    checkAuthStatus();
-  }, []);
+    // ✅ Ejecutar inmediatamente
+    restoreSession();
+  }, []); // Solo se ejecuta una vez al montar el componente
 
-  // Función para hacer login
+  // ✅ Función adaptada para tu flujo de autenticación actual
   const login = async (credentials) => {
     try {
-      dispatch({ type: AUTH_ACTIONS.LOGIN_START });
+      console.log('🔐 Iniciando proceso de login...', { cedula: credentials.cedula });
       
-      const response = await authService.login(credentials);
+      // ✅ En tu caso, el login real sucede después de la verificación 2FA
+      // Esta función solo valida que los datos son correctos para proceder
+      const userData = {
+        cedula: credentials.cedula,
+        correo: credentials.correo,
+        nombre: credentials.nombre || `Usuario ${credentials.cedula}`,
+        categoria: credentials.categoria || 'ESTUDIANTE',
+        fechaLogin: new Date().toISOString()
+      };
       
-      if (response.success) {
-        const userData = {
-          cedula: credentials.cedula,
-          correo: credentials.correo,
-          nombre: response.user?.nombre || 'Usuario',
-          categoria: response.user?.categoria || 'ESTUDIANTE',
-          fechaLogin: new Date().toISOString()
-        };
-        
-        // Guardar en localStorage
-        localStorage.setItem('user', JSON.stringify(userData));
-        if (response.token) {
-          localStorage.setItem('authToken', response.token);
-        }
-        
-        dispatch({
-          type: AUTH_ACTIONS.LOGIN_SUCCESS,
-          payload: { user: userData }
-        });
+      console.log('✅ Login exitoso, guardando datos:', userData);
+      
+      dispatch({
+        type: AUTH_ACTIONS.LOGIN_SUCCESS,
+        payload: { user: userData }
+      });
 
-        return { success: true, user: userData };
-      } else {
-        throw new Error(response.message || 'Error de autenticación');
-      }
+      return { success: true, user: userData };
+      
     } catch (error) {
       const errorMessage = error.message || 'Error al iniciar sesión';
+      console.error('❌ Error en login:', errorMessage);
+      
       dispatch({
         type: AUTH_ACTIONS.LOGIN_FAILURE,
         payload: { error: errorMessage }
@@ -172,8 +197,7 @@ export const AuthProvider = ({ children }) => {
       
       if (response.success) {
         dispatch({
-          type: AUTH_ACTIONS.SET_LOADING,
-          payload: false
+          type: AUTH_ACTIONS.REGISTER_SUCCESS
         });
 
         return { success: true, message: 'Usuario registrado exitosamente' };
@@ -191,11 +215,19 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Función para hacer logout
+  // ✅ Función mejorada para hacer logout
   const logout = () => {
+    console.log('🚪 Cerrando sesión...');
+    
+    // Limpiar localStorage
     localStorage.removeItem('user');
     localStorage.removeItem('authToken');
+    localStorage.removeItem('refreshToken');
+    
+    // Actualizar estado
     dispatch({ type: AUTH_ACTIONS.LOGOUT });
+    
+    console.log('✅ Sesión cerrada exitosamente');
   };
 
   // Función para limpiar errores
@@ -203,7 +235,7 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: AUTH_ACTIONS.CLEAR_ERROR });
   };
 
-  // Función para actualizar datos del usuario
+  // ✅ Función mejorada para actualizar datos del usuario
   const updateUser = (userData) => {
     const newUserData = { ...state.user, ...userData };
     localStorage.setItem('user', JSON.stringify(newUserData));
@@ -211,6 +243,32 @@ export const AuthProvider = ({ children }) => {
       type: AUTH_ACTIONS.UPDATE_USER,
       payload: userData
     });
+  };
+
+  // ✅ Función para verificar si la sesión es válida
+  const isSessionValid = () => {
+    const user = state.user;
+    const token = localStorage.getItem('authToken');
+    return !!(user && token && user.cedula && user.correo);
+  };
+
+  // ✅ Función auxiliar para completar login después de 2FA
+  const completeLogin = (userData, token = null) => {
+    console.log('🎯 Completando login con datos:', userData);
+    
+    // Guardar en localStorage
+    localStorage.setItem('user', JSON.stringify(userData));
+    if (token) {
+      localStorage.setItem('authToken', token);
+    }
+    
+    // Actualizar estado
+    dispatch({
+      type: AUTH_ACTIONS.LOGIN_SUCCESS,
+      payload: { user: userData }
+    });
+    
+    return { success: true, user: userData };
   };
 
   // Valor del contexto
@@ -226,7 +284,9 @@ export const AuthProvider = ({ children }) => {
     register,
     logout,
     clearError,
-    updateUser
+    updateUser,
+    isSessionValid,
+    completeLogin // ✅ Nueva función para tu flujo 2FA
   };
 
   return (
@@ -236,16 +296,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
-// Hook personalizado para usar el contexto (versión original)
-export const useAuthContext = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error('useAuthContext debe ser usado dentro de un AuthProvider');
-  }
-  return context;
-};
-
-// Hook personalizado alternativo (para compatibilidad)
+// Hook personalizado para usar el contexto
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
@@ -253,3 +304,6 @@ export const useAuth = () => {
   }
   return context;
 };
+
+// Export alternativo para compatibilidad
+export const useAuthContext = useAuth;

@@ -1,0 +1,113 @@
+/* 
+   Estilos para el componente de loading
+   Agregar este contenido a tu archivo de estilos globales o crear un nuevo archivo Loading.css
+*/
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: var(--uta-white, #ffffff);
+  font-family: var(--font-family-base, 'Inter', Arial, sans-serif);
+  color: var(--uta-gray-dark, #333333);
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid var(--uta-red-primary, #8B0000);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 20px;
+}
+
+.loading-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--uta-gray-medium, #666666);
+  margin: 0;
+  text-align: center;
+}
+
+/* Animación del spinner */
+@keyframes spin {
+  0% { 
+    transform: rotate(0deg); 
+  }
+  100% { 
+    transform: rotate(360deg); 
+  }
+}
+
+/* Variante más elegante del loading */
+.loading-container-elegant {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family: var(--font-family-base, 'Inter', Arial, sans-serif);
+}
+
+.loading-spinner-elegant {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(139, 0, 0, 0.1);
+  border-left: 5px solid var(--uta-red-primary, #8B0000);
+  border-radius: 50%;
+  animation: spinElegant 1.2s linear infinite;
+  margin-bottom: 25px;
+}
+
+.loading-text-elegant {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--uta-red-primary, #8B0000);
+  margin: 0;
+  text-align: center;
+  opacity: 0.8;
+}
+
+@keyframes spinElegant {
+  0% { 
+    transform: rotate(0deg);
+    border-left-color: var(--uta-red-primary, #8B0000);
+  }
+  25% { 
+    border-left-color: var(--uta-red-secondary, #A52A2A);
+  }
+  50% { 
+    border-left-color: var(--uta-red-primary, #8B0000);
+  }
+  75% { 
+    border-left-color: var(--uta-red-secondary, #A52A2A);
+  }
+  100% { 
+    transform: rotate(360deg);
+    border-left-color: var(--uta-red-primary, #8B0000);
+  }
+}
+
+/* Loading para dispositivos móviles */
+@media (max-width: 768px) {
+  .loading-container,
+  .loading-container-elegant {
+    padding: 20px;
+  }
+  
+  .loading-spinner,
+  .loading-spinner-elegant {
+    width: 35px;
+    height: 35px;
+    border-width: 3px;
+  }
+  
+  .loading-text,
+  .loading-text-elegant {
+    font-size: 14px;
+  }
+}

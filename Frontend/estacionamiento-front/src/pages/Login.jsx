@@ -20,7 +20,7 @@ function Login() {
   const [errors, setErrors] = useState({});
   
   const navigate = useNavigate();
-  const { login } = useAuth(); // 🔧 Usar el hook de autenticación
+  const { completeLogin } = useAuth(); // ✅ Usar la nueva función
 
   // Limpiar mensajes después de un tiempo
   useEffect(() => {
@@ -141,6 +141,7 @@ function Login() {
     }
   };
 
+  // ✅ Función actualizada para verificar código
   const verificarCodigo = async () => {
     if (!codigoVerificacion || codigoVerificacion.length !== 6) {
       setMensaje('❌ El código debe tener 6 dígitos');
@@ -168,7 +169,7 @@ function Login() {
         setTipoMensaje('exito');
         setMostrarModalCodigo(false);
         
-        // 🔧 Crear objeto usuario para el AuthContext
+        // ✅ Crear objeto usuario completo
         const userData = { 
           cedula, 
           correo,
@@ -177,19 +178,11 @@ function Login() {
           fechaLogin: new Date().toISOString()
         };
         
-        // 🔧 Usar el contexto de autenticación
-        const loginResult = await login({
-          cedula,
-          correo,
-          contraseña
-        });
+        // ✅ Usar la nueva función completeLogin del AuthContext
+        const loginResult = completeLogin(userData, data.token);
 
         if (loginResult.success) {
-          // Actualizar datos del usuario con la información del servidor
-          localStorage.setItem('user', JSON.stringify(userData));
-          if (data.token) {
-            localStorage.setItem('authToken', data.token);
-          }
+          console.log('✅ Login completado exitosamente');
           
           // Redireccionar al dashboard
           setTimeout(() => {
@@ -297,62 +290,44 @@ function Login() {
                   onChange={(e) => manejarCambio('contraseña', e.target.value)}
                   className={errors.contraseña ? 'invalid' : validFields.contraseña ? 'valid' : ''}
                   required
-                  minLength="1"
                 />
                 {errors.contraseña && <small className="error-text">{errors.contraseña}</small>}
               </div>
 
               <button 
                 type="submit" 
-                className={isLoading ? 'loading' : ''}
+                className="login-button"
                 disabled={isLoading || Object.keys(errors).length > 0}
               >
-                {isLoading ? '' : '🔐 Ingresar al Sistema'}
+                {isLoading ? (
+                  <>
+                    <span className="loading-spinner-small"></span>
+                    Verificando...
+                  </>
+                ) : (
+                  '🔐 Iniciar Sesión'
+                )}
               </button>
-
-              {mensaje && (
-                <div className={`login-mensaje ${tipoMensaje}`}>
-                  {mensaje}
-                </div>
-              )}
             </form>
 
-            <div className="login-buttons">
-              <button 
-                type="button" 
-                className="btn-registrarse" 
-                onClick={redirigirRegistro}
-                disabled={isLoading}
-              >
-                ← Volver
-              </button>
-            </div>
-
-            <div className="login-info">
-              <h4>📋 Información de Acceso</h4>
-              <p><strong>🎓 Estudiantes:</strong> Use su cédula y correo institucional (@uta.edu.ec)</p>
-              <p><strong>👨‍🏫 Docentes/Staff:</strong> Use las credenciales proporcionadas por DTIC</p>
-              <p><strong>🆘 Problemas de acceso:</strong> Contacte al soporte técnico</p>
-            </div>
-
-            {/* Botón de desarrollo para limpiar formulario */}
-            {process.env.NODE_ENV === 'development' && (
-              <button 
-                type="button" 
-                onClick={limpiarFormulario}
-                style={{
-                  marginTop: '10px',
-                  padding: '8px 16px',
-                  background: '#666',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '8px',
-                  fontSize: '0.8rem'
-                }}
-              >
-                🧹 Limpiar (Dev)
-              </button>
+            {/* Mensajes de estado */}
+            {mensaje && (
+              <div className={`mensaje ${tipoMensaje}`}>
+                <p>{mensaje}</p>
+              </div>
             )}
+
+            <div className="login-links">
+              <button type="button" className="link-button" onClick={redirigirRegistro}>
+                📝 ¿No tienes cuenta? Regístrate
+              </button>
+              <button type="button" className="link-button" onClick={volverHome}>
+                🏠 Volver al inicio
+              </button>
+              <button type="button" className="link-button secondary" onClick={limpiarFormulario}>
+                🧹 Limpiar formulario
+              </button>
+            </div>
           </div>
         </div>
       </div>
