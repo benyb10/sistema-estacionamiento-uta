@@ -73,7 +73,7 @@ export const API_ENDPOINTS = {
   // Lugares
   PLACES: '/lugares/',
   PLACE_BY_NUMBER: (numero) => `/lugares/${numero}/`,
-  AVAILABLE_PLACES: '/lugares/disponibles/',
+  AVAILABLE_PLACES: '/ingresovehiculos/lugares-disponibles/',
   PLACE_TYPES: '/lugares/tipos/',
   
   // Ingresos de vehículos
@@ -82,6 +82,7 @@ export const API_ENDPOINTS = {
   ACTIVE_ENTRIES: '/ingresovehiculos/activos/',
   USER_ENTRIES: (userId) => `/usuarios/${userId}/ingresos/`,
   VEHICLE_ENTRIES: (placa) => `/vehiculos/${placa}/ingresos/`,
+  
   
   // Reportes
   REPORTS: '/reportes/',

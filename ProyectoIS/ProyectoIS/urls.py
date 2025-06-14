@@ -15,11 +15,10 @@ urlpatterns = [
     path('usuarios/', include("usuarios.urls")),
     path('vehiculos/', include('vehiculos.urls')),  
     path('lugares/', include('lugares.urls')),
-    path('ingresovehiculos/', include('ingresovehiculos.urls')),
+    path('ingresovehiculos/', include('ingresovehiculos.urls')),  # ← Aquí se incluyen TODAS las rutas de ingresovehiculos
     path('login/', LoginAPIView.as_view(), name='login.urls'),
     path('verificar-codigo/', VerificarCodigoAPIView.as_view(), name='verificar-codigo.urls'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('ping/',  ping, name='ping'),
-    
 ]

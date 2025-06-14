@@ -1,3 +1,5 @@
+print("🔥 DEBUG: views.py cargado - LugaresDisponiblesAPIView disponible")
+
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -6,13 +8,16 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import Q
+from django.db import models  # ← AGREGAR ESTA LÍNEA QUE FALTA
 from decimal import Decimal
+from rest_framework import serializers  # ← AGREGAR ESTA LÍNEA QUE FALTA
 
 from .models import IngresoVehiculo
 from .serializers import IngresoVehiculoSerializer
 from vehiculos.models import Vehiculo
 from lugares.models import Lugar
 from usuarios.models import Usuario
+
 
 class IngresoVehiculoViewSet(viewsets.ModelViewSet):
     """
