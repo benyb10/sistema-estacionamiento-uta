@@ -1,5 +1,3 @@
-print("🔥 DEBUG: views.py cargado - LugaresDisponiblesAPIView disponible")
-
 from django.shortcuts import render, get_object_or_404
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
@@ -8,16 +6,15 @@ from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from django.utils import timezone
 from django.db.models import Q
-from django.db import models  # ← AGREGAR ESTA LÍNEA QUE FALTA
+from django.db import models
 from decimal import Decimal
-from rest_framework import serializers  # ← AGREGAR ESTA LÍNEA QUE FALTA
+from rest_framework import serializers
 
 from .models import IngresoVehiculo
-from .serializers import IngresoVehiculoSerializer
+from .serializers import IngresoVehiculoSerializer, IngresoVehiculoCreateSerializer  # ← Importar ambos serializers
 from vehiculos.models import Vehiculo
 from lugares.models import Lugar
 from usuarios.models import Usuario
-
 
 class IngresoVehiculoViewSet(viewsets.ModelViewSet):
     """
@@ -35,46 +32,50 @@ class IngresoVehiculoViewSet(viewsets.ModelViewSet):
             'usuario_registro'
         ).order_by('-hora_ingreso')
     
-    def perform_create(self, serializer):
-        """Personalizar la creación de ingresos"""
-        # Verificar que el lugar esté disponible
-        lugar = serializer.validated_data['lugar']
-        if not lugar.disponible:
-            raise serializers.ValidationError("El lugar seleccionado no está disponible")
+    def create(self, request, *args, **kwargs):
+        """Crear ingreso usando el serializer específico"""
+        serializer = IngresoVehiculoCreateSerializer(data=request.data)
         
-        # Verificar que el vehículo no tenga un ingreso activo
-        vehiculo = serializer.validated_data['vehiculo']
-        ingreso_activo = IngresoVehiculo.objects.filter(
-            vehiculo=vehiculo,
-            estado='EN_CURSO'
-        ).first()
-        
-        if ingreso_activo:
-            raise serializers.ValidationError(
-                f"El vehículo {vehiculo.placa} ya tiene un ingreso activo"
+        if serializer.is_valid():
+            # Obtener los datos validados
+            vehiculo = serializer.validated_data['vehiculo']
+            lugar = serializer.validated_data['lugar']
+            usuario_registro = serializer.validated_data.get('usuario_registro')
+            observaciones = serializer.validated_data.get('observaciones', '')
+            
+            # Generar número de ticket
+            fecha_hoy = timezone.now().strftime('%Y%m%d')
+            ultimo_ticket = IngresoVehiculo.objects.filter(
+                fecha_registro__date=timezone.now().date()
+            ).count()
+            ticket_numero = f"TKT-{fecha_hoy}-{ultimo_ticket + 1:03d}"
+            
+            # Establecer tarifa según el usuario y tipo de lugar
+            if hasattr(lugar.tipo_lugar, 'get_tarifa_para_usuario'):
+                tarifa = lugar.tipo_lugar.get_tarifa_para_usuario(vehiculo.usuario)
+            else:
+                tarifa = lugar.tipo_lugar.tarifa_por_hora
+            
+            # Crear el ingreso
+            ingreso = IngresoVehiculo.objects.create(
+                vehiculo=vehiculo,
+                lugar=lugar,
+                usuario_registro=usuario_registro or request.user,
+                observaciones=observaciones,
+                ticket_numero=ticket_numero,
+                tarifa_aplicada=tarifa,
+                estado='EN_CURSO'
             )
+            
+            # Marcar el lugar como ocupado
+            lugar.estado = 'OCUPADO'
+            lugar.save()
+            
+            # Responder con el serializer principal
+            response_serializer = IngresoVehiculoSerializer(ingreso)
+            return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         
-        # Generar número de ticket
-        fecha_hoy = timezone.now().strftime('%Y%m%d')
-        ultimo_ticket = IngresoVehiculo.objects.filter(
-            fecha_registro__date=timezone.now().date()
-        ).count()
-        ticket_numero = f"TKT-{fecha_hoy}-{ultimo_ticket + 1:03d}"
-        
-        # Establecer tarifa según el usuario y tipo de lugar
-        tarifa = lugar.tipo_lugar.get_tarifa_para_usuario(vehiculo.usuario)
-        
-        # Guardar el ingreso
-        ingreso = serializer.save(
-            ticket_numero=ticket_numero,
-            tarifa_aplicada=tarifa,
-            estado='EN_CURSO'
-        )
-        
-        # Marcar el lugar como ocupado
-        lugar.marcar_como_ocupado()
-        
-        print(f"✅ Ingreso creado: {ingreso.ticket_numero} - {vehiculo.placa}")
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     @action(detail=False, methods=['get'])
     def activos(self, request):
@@ -136,7 +137,8 @@ class IngresoVehiculoViewSet(viewsets.ModelViewSet):
         ingreso.save()
         
         # Liberar el lugar
-        ingreso.lugar.marcar_como_disponible()
+        ingreso.lugar.estado = 'DISPONIBLE'
+        ingreso.lugar.save()
         
         serializer = self.get_serializer(ingreso)
         return Response(serializer.data)

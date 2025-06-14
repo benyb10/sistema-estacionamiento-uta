@@ -1,6 +1,5 @@
 // CONFIGURACIÓN DE API - CENTRALIZADA
 
-
 // 🔧 CONFIGURACIÓN PRINCIPAL - CAMBIA AQUÍ LA IP DEL BACKEND
 const API_CONFIG_MAIN = {
   // Cambiar esta IP por la IP de la PC donde está el backend
@@ -67,22 +66,23 @@ export const API_ENDPOINTS = {
   // Vehículos
   VEHICLES: '/vehiculos/',
   VEHICLE_BY_PLACA: (placa) => `/vehiculos/${placa}/`,
-  USER_VEHICLES: (cedula) => `/vehiculos/usuario/${cedula}/`, // Corregido
+  USER_VEHICLES: (cedula) => `/vehiculos/usuario/${cedula}/`,
   VEHICLE_DETAIL: (placa) => `/vehiculos/${placa}/`,
   
   // Lugares
   PLACES: '/lugares/',
   PLACE_BY_NUMBER: (numero) => `/lugares/${numero}/`,
-  AVAILABLE_PLACES: '/ingresovehiculos/lugares-disponibles/',
+  AVAILABLE_PLACES: '/ingresovehiculos/lugares-disponibles/',  // ← CORREGIDO
   PLACE_TYPES: '/lugares/tipos/',
   
   // Ingresos de vehículos
-  PARKING_ENTRIES: '/ingresovehiculos/',
+  PARKING_ENTRIES: '/ingresovehiculos/entrada/',  // ← CAMBIADO para usar ruta específica
   ENTRY_BY_ID: (id) => `/ingresovehiculos/${id}/`,
   ACTIVE_ENTRIES: '/ingresovehiculos/activos/',
   USER_ENTRIES: (userId) => `/usuarios/${userId}/ingresos/`,
   VEHICLE_ENTRIES: (placa) => `/vehiculos/${placa}/ingresos/`,
-  
+  SEARCH_ACTIVE_ENTRY: '/ingresovehiculos/buscar-activo/',  // ← NUEVO
+  FINALIZE_ENTRY: (id) => `/ingresovehiculos/${id}/salida/`,  // ← NUEVO
   
   // Reportes
   REPORTS: '/reportes/',

@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { API_BASE_URL, API_ENDPOINTS, getAuthHeaders } from '../../config/api';
 import '../../styles/pages/Parking.css';
 
-const ExitPage = () => {
+const ExitPage = () => {  
   const { user } = useAuth();
   const [busqueda, setBusqueda] = useState('');
   const [tipoBusqueda, setTipoBusqueda] = useState('placa'); // 'placa' o 'ticket'
@@ -28,9 +28,9 @@ const ExitPage = () => {
     try {
       let url;
       if (tipoBusqueda === 'placa') {
-        url = `${API_BASE_URL}${API_ENDPOINTS.ACTIVE_ENTRIES}?vehiculo__placa=${busqueda.toUpperCase()}`;
+        url = `${API_BASE_URL}${API_ENDPOINTS.SEARCH_ACTIVE_ENTRY}?placa=${busqueda.toUpperCase()}`;
       } else {
-        url = `${API_BASE_URL}${API_ENDPOINTS.ACTIVE_ENTRIES}?ticket_numero=${busqueda}`;
+        url = `${API_BASE_URL}${API_ENDPOINTS.SEARCH_ACTIVE_ENTRY}?ticket=${busqueda}`;
       }
 
       console.log('🔍 Buscando ingreso activo:', url);
@@ -41,12 +41,12 @@ const ExitPage = () => {
 
       const data = await response.json();
 
-      if (response.ok && data.length > 0) {
-        const ingreso = data[0]; // Tomar el primer resultado
-        setIngresoActivo(ingreso);
+      // El endpoint buscar-activo devuelve UN objeto, no un array
+      if (response.ok && data.id) {
+        setIngresoActivo(data);
         setMensaje('✅ Vehículo encontrado');
         setTipoMensaje('exito');
-        console.log('✅ Ingreso encontrado:', ingreso);
+        console.log('✅ Ingreso encontrado:', data);
       } else {
         setMensaje('❌ No se encontró un vehículo activo con esos datos');
         setTipoMensaje('error');
@@ -84,39 +84,36 @@ const ExitPage = () => {
     setMensaje('');
 
     try {
-      const duracion = calcularDuracion(ingresoActivo.hora_ingreso);
-      const costo = calcularCosto(
-        duracion.totalMinutos, 
-        ingresoActivo.lugar?.tipo_lugar?.tarifa_por_hora || 0
-      );
-
-      const datosActualizacion = {
-        hora_salida: new Date().toISOString(),
-        estado: 'FINALIZADO',
-        duracion_minutos: duracion.totalMinutos,
-        costo_total: costo,
+      const datosFinalizacion = {
         metodo_pago: metodoPago,
-        pagado: metodoPago !== 'CREDITO' // Si es crédito, queda pendiente de pago
+        observaciones: `Salida registrada el ${new Date().toLocaleString()}`
       };
 
-      console.log('📤 Procesando salida:', datosActualizacion);
+      console.log('📤 Procesando salida:', datosFinalizacion);
 
+      // Usar la ruta específica de finalización
       const response = await fetch(
-        `${API_BASE_URL}${API_ENDPOINTS.ENTRY_BY_ID(ingresoActivo.id)}`,
+        `${API_BASE_URL}${API_ENDPOINTS.FINALIZE_ENTRY(ingresoActivo.id)}`,
         {
-          method: 'PATCH',
+          method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify(datosActualizacion)
+          body: JSON.stringify(datosFinalizacion)
         }
       );
 
       const data = await response.json();
 
       if (response.ok) {
+        const duracion = calcularDuracion(ingresoActivo.hora_ingreso);
+        const costo = calcularCosto(
+          duracion.totalMinutos, 
+          ingresoActivo.lugar?.tipo_lugar?.tarifa_por_hora || 0
+        );
+
         setMensaje(
           `✅ ¡Salida registrada exitosamente!\n` +
           `Duración: ${duracion.horas}h ${duracion.minutos}m\n` +
-          `Costo total: $${costo.toFixed(2)}\n` +
+          `Costo total: $${data.costo_total || costo.toFixed(2)}\n` +
           `Método de pago: ${metodoPago}`
         );
         setTipoMensaje('exito');
@@ -368,4 +365,4 @@ const ExitPage = () => {
   );
 };
 
-export default ExitPage;
+export default ExitPage;  

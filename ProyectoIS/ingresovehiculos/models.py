@@ -27,29 +27,29 @@ class IngresoVehiculo(models.Model):
         Usuario, 
         on_delete=models.CASCADE, 
         related_name='registros_realizados'
-    )  # Nuevo
+    )
     
     # Tiempos
     hora_ingreso = models.DateTimeField(default=timezone.now)
     hora_salida = models.DateTimeField(null=True, blank=True)
-    duracion_minutos = models.IntegerField(null=True, blank=True)  # Nuevo - calculado automáticamente
+    duracion_minutos = models.IntegerField(null=True, blank=True)
     
     # Estado y control
-    estado = models.CharField(max_length=20, choices=ESTADOS, default='EN_CURSO')  # Nuevo
+    estado = models.CharField(max_length=20, choices=ESTADOS, default='EN_CURSO')
     
     # Información financiera
-    tarifa_aplicada = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Nuevo
-    costo_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)  # Nuevo
-    metodo_pago = models.CharField(max_length=20, choices=METODOS_PAGO, default='EFECTIVO')  # Nuevo
-    pagado = models.BooleanField(default=False)  # Nuevo
+    tarifa_aplicada = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    costo_total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    metodo_pago = models.CharField(max_length=20, choices=METODOS_PAGO, default='EFECTIVO')
+    pagado = models.BooleanField(default=False)
     
     # Información adicional
-    observaciones = models.TextField(blank=True, null=True)  # Nuevo
-    ticket_numero = models.CharField(max_length=20, unique=True, blank=True)  # Nuevo
+    observaciones = models.TextField(blank=True, null=True)
+    ticket_numero = models.CharField(max_length=20, unique=True, blank=True)
     
     # Campos de auditoría
-    fecha_registro = models.DateTimeField(auto_now_add=True)  # Nuevo
-    fecha_actualizacion = models.DateTimeField(auto_now=True)  # Nuevo
+    fecha_registro = models.DateTimeField(auto_now_add=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     def save(self, *args, **kwargs):
         # Generar número de ticket si no existe
@@ -66,15 +66,16 @@ class IngresoVehiculo(models.Model):
                 horas = self.duracion_minutos / 60
                 self.costo_total = Decimal(str(horas)) * self.tarifa_aplicada
         
-        # Actualizar estado del lugar
+        # ✅ CORREGIDO: Actualizar estado del lugar usando el campo 'estado', no 'disponible'
         if self.estado == 'EN_CURSO':
             self.lugar.estado = 'OCUPADO'
-            self.lugar.disponible = False
         elif self.estado in ['FINALIZADO', 'CANCELADO']:
             self.lugar.estado = 'DISPONIBLE'
-            self.lugar.disponible = True
         
+        # Guardar el lugar primero
         self.lugar.save()
+        
+        # Luego guardar el ingreso
         super().save(*args, **kwargs)
 
     def calcular_costo(self):
@@ -112,4 +113,3 @@ class ReporteEstacionamiento(models.Model):
     class Meta:
         verbose_name = "Reporte de Estacionamiento"
         verbose_name_plural = "Reportes de Estacionamiento"
-

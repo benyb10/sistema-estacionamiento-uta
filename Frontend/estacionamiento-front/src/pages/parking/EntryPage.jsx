@@ -47,7 +47,7 @@ const EntryPage = () => {
   const cargarLugaresDisponibles = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}${API_ENDPOINTS.AVAILABLE_PLACES}`,
+        `${API_BASE_URL}${API_ENDPOINTS.AVAILABLE_PLACES}`,  // ← CORREGIDO: Usar AVAILABLE_PLACES no SEARCH_ACTIVE_ENTRY
         {
           headers: getAuthHeaders()
         }
@@ -100,17 +100,16 @@ const EntryPage = () => {
 
     try {
       const datosIngreso = {
-        vehiculo: formData.placa,
+        vehiculo: formData.placa,  // ← CAMBIO: usar 'vehiculo' no 'vehiculo_placa'
         lugar: parseInt(formData.lugar),
         usuario_registro: user.cedula,
-        observaciones: formData.observaciones,
-        estado: 'EN_CURSO'
+        observaciones: formData.observaciones
       };
 
       console.log('📤 Enviando datos de ingreso:', datosIngreso);
 
       const response = await fetch(
-        `${API_BASE_URL}${API_ENDPOINTS.PARKING_ENTRIES}`,
+        `${API_BASE_URL}${API_ENDPOINTS.PARKING_ENTRIES}`,  // ← Esto apunta a /ingresovehiculos/entrada/
         {
           method: 'POST',
           headers: getAuthHeaders(),
